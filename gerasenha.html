@@ -1,0 +1,388 @@
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/index.html b/index.html
+new file mode 100644
+index 0000000000000000000000000000000000000000..e641998fd7130cfd1e34081614c9ba990e64f907
+--- /dev/null
++++ b/index.html
+@@ -0,0 +1,378 @@
++<!DOCTYPE html>
++<html lang="pt-BR">
++<head>
++  <meta charset="UTF-8" />
++  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++  <title>Gerador de Senhas Seguras</title>
++  <style>
++    :root {
++      --bg-1: #111827;
++      --bg-2: #1f2937;
++      --card: rgba(17, 24, 39, 0.82);
++      --text: #f9fafb;
++      --muted: #9ca3af;
++      --primary: #38bdf8;
++      --primary-hover: #0ea5e9;
++      --ok: #10b981;
++      --warn: #f59e0b;
++      --bad: #ef4444;
++      --border: rgba(255, 255, 255, 0.14);
++      --shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
++    }
++
++    * {
++      box-sizing: border-box;
++    }
++
++    body {
++      margin: 0;
++      min-height: 100vh;
++      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
++      color: var(--text);
++      background: radial-gradient(circle at 20% 20%, #1d4ed8 0%, transparent 30%),
++        radial-gradient(circle at 80% 15%, #4f46e5 0%, transparent 25%),
++        linear-gradient(135deg, var(--bg-1), var(--bg-2));
++      display: grid;
++      place-items: center;
++      padding: 20px;
++    }
++
++    .container {
++      width: min(420px, 100%);
++      background: var(--card);
++      border: 1px solid var(--border);
++      border-radius: 18px;
++      box-shadow: var(--shadow);
++      backdrop-filter: blur(8px);
++      padding: 24px;
++    }
++
++    .title {
++      display: flex;
++      align-items: center;
++      justify-content: space-between;
++      gap: 12px;
++      margin: 0 0 18px;
++    }
++
++    h1 {
++      font-size: 1.35rem;
++      margin: 0;
++    }
++
++    .badge {
++      font-size: 0.75rem;
++      padding: 6px 10px;
++      border-radius: 999px;
++      background: rgba(56, 189, 248, 0.16);
++      border: 1px solid rgba(56, 189, 248, 0.5);
++      color: #bae6fd;
++      white-space: nowrap;
++    }
++
++    .field {
++      margin-bottom: 14px;
++    }
++
++    .field-head {
++      display: flex;
++      justify-content: space-between;
++      align-items: center;
++      margin-bottom: 8px;
++    }
++
++    label,
++    .field span {
++      font-size: 0.92rem;
++      color: var(--muted);
++    }
++
++    input[type="range"] {
++      width: 100%;
++      accent-color: var(--primary);
++      cursor: pointer;
++    }
++
++    .checks {
++      display: grid;
++      grid-template-columns: repeat(2, minmax(0, 1fr));
++      gap: 8px;
++      margin-bottom: 16px;
++    }
++
++    .checks label {
++      display: flex;
++      align-items: center;
++      gap: 8px;
++      background: rgba(255, 255, 255, 0.05);
++      border: 1px solid var(--border);
++      border-radius: 10px;
++      padding: 10px;
++      color: var(--text);
++      cursor: pointer;
++      user-select: none;
++    }
++
++    input[type="checkbox"] {
++      accent-color: var(--primary);
++      cursor: pointer;
++    }
++
++    .senha-box {
++      min-height: 52px;
++      background: #0b1220;
++      border: 1px solid var(--border);
++      border-radius: 10px;
++      padding: 12px;
++      word-break: break-all;
++      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
++      line-height: 1.35;
++      margin-bottom: 12px;
++    }
++
++    .strength {
++      margin-bottom: 16px;
++    }
++
++    .meter {
++      width: 100%;
++      height: 8px;
++      background: rgba(255, 255, 255, 0.15);
++      border-radius: 999px;
++      overflow: hidden;
++    }
++
++    .meter-fill {
++      height: 100%;
++      width: 0;
++      transition: width 0.25s ease, background-color 0.25s ease;
++    }
++
++    .strength-text {
++      margin-top: 6px;
++      font-size: 0.85rem;
++      color: var(--muted);
++    }
++
++    .actions {
++      display: grid;
++      grid-template-columns: 1fr 1fr;
++      gap: 10px;
++    }
++
++    button {
++      border: none;
++      border-radius: 10px;
++      padding: 11px 12px;
++      color: #fff;
++      font-weight: 700;
++      cursor: pointer;
++      transition: 0.2s;
++    }
++
++    .btn-primary {
++      background: linear-gradient(90deg, var(--primary), #818cf8);
++    }
++
++    .btn-secondary {
++      background: rgba(255, 255, 255, 0.09);
++      border: 1px solid var(--border);
++    }
++
++    button:hover {
++      transform: translateY(-1px);
++      filter: brightness(1.05);
++    }
++
++    button:disabled {
++      opacity: 0.6;
++      cursor: not-allowed;
++      transform: none;
++    }
++
++    .feedback {
++      min-height: 20px;
++      margin-top: 10px;
++      font-size: 0.86rem;
++    }
++
++    .feedback.ok {
++      color: var(--ok);
++    }
++
++    .feedback.warn {
++      color: var(--warn);
++    }
++
++    @media (max-width: 420px) {
++      .checks,
++      .actions {
++        grid-template-columns: 1fr;
++      }
++    }
++  </style>
++</head>
++<body>
++  <main class="container">
++    <div class="title">
++      <h1>Gerador de Senhas</h1>
++      <span class="badge">seguro</span>
++    </div>
++
++    <div class="field">
++      <div class="field-head">
++        <label for="tamanho">Tamanho da senha</label>
++        <span id="tamanhoValor">12</span>
++      </div>
++      <input type="range" id="tamanho" min="4" max="64" value="12" />
++    </div>
++
++    <section class="checks" aria-label="Tipos de caracteres">
++      <label><input type="checkbox" id="maiusculas" checked /> Maiúsculas (A-Z)</label>
++      <label><input type="checkbox" id="minusculas" checked /> Minúsculas (a-z)</label>
++      <label><input type="checkbox" id="numeros" checked /> Números (0-9)</label>
++      <label><input type="checkbox" id="simbolos" /> Símbolos (!@#$)</label>
++    </section>
++
++    <div class="senha-box" id="senha" aria-live="polite"></div>
++
++    <div class="strength">
++      <div class="meter" aria-hidden="true">
++        <div class="meter-fill" id="meterFill"></div>
++      </div>
++      <div class="strength-text" id="forcaTexto">Força: -</div>
++    </div>
++
++    <div class="actions">
++      <button class="btn-primary" id="btnGerar" type="button">Gerar senha</button>
++      <button class="btn-secondary" id="btnCopiar" type="button">Copiar</button>
++    </div>
++
++    <div class="feedback" id="feedback" aria-live="assertive"></div>
++  </main>
++
++  <script>
++    const elementos = {
++      tamanho: document.getElementById("tamanho"),
++      tamanhoValor: document.getElementById("tamanhoValor"),
++      maiusculas: document.getElementById("maiusculas"),
++      minusculas: document.getElementById("minusculas"),
++      numeros: document.getElementById("numeros"),
++      simbolos: document.getElementById("simbolos"),
++      senha: document.getElementById("senha"),
++      feedback: document.getElementById("feedback"),
++      btnGerar: document.getElementById("btnGerar"),
++      btnCopiar: document.getElementById("btnCopiar"),
++      meterFill: document.getElementById("meterFill"),
++      forcaTexto: document.getElementById("forcaTexto")
++    };
++
++    const conjuntos = {
++      maiusculas: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
++      minusculas: "abcdefghijklmnopqrstuvwxyz",
++      numeros: "0123456789",
++      simbolos: "!@#$%^&*()_+{}[]<>?/"
++    };
++
++    function avaliarForca(senha) {
++      let pontos = 0;
++      if (senha.length >= 8) pontos++;
++      if (senha.length >= 12) pontos++;
++      if (/[A-Z]/.test(senha)) pontos++;
++      if (/[a-z]/.test(senha)) pontos++;
++      if (/[0-9]/.test(senha)) pontos++;
++      if (/[^A-Za-z0-9]/.test(senha)) pontos++;
++
++      if (pontos <= 2) return { label: "Fraca", cor: "var(--bad)", percentual: 33 };
++      if (pontos <= 4) return { label: "Média", cor: "var(--warn)", percentual: 66 };
++      return { label: "Forte", cor: "var(--ok)", percentual: 100 };
++    }
++
++    function atualizarForca(senha) {
++      if (!senha) {
++        elementos.meterFill.style.width = "0";
++        elementos.forcaTexto.textContent = "Força: -";
++        return;
++      }
++
++      const resultado = avaliarForca(senha);
++      elementos.meterFill.style.width = `${resultado.percentual}%`;
++      elementos.meterFill.style.backgroundColor = resultado.cor;
++      elementos.forcaTexto.textContent = `Força: ${resultado.label}`;
++    }
++
++    function gerarSenha() {
++      const tamanho = Number(elementos.tamanho.value);
++      const chaves = Object.keys(conjuntos).filter((chave) => elementos[chave].checked);
++
++      if (!chaves.length) {
++        elementos.senha.textContent = "Selecione pelo menos um tipo de caractere.";
++        elementos.feedback.textContent = "Ative ao menos uma opção para gerar a senha.";
++        elementos.feedback.className = "feedback warn";
++        atualizarForca("");
++        return;
++      }
++
++      let senha = "";
++      const todosCaracteres = chaves.map((chave) => conjuntos[chave]).join("");
++
++      chaves.forEach((chave) => {
++        const caracteres = conjuntos[chave];
++        senha += caracteres[Math.floor(Math.random() * caracteres.length)];
++      });
++
++      for (let i = senha.length; i < tamanho; i++) {
++        senha += todosCaracteres[Math.floor(Math.random() * todosCaracteres.length)];
++      }
++
++      senha = senha
++        .split("")
++        .sort(() => Math.random() - 0.5)
++        .join("");
++
++      elementos.senha.textContent = senha;
++      elementos.feedback.textContent = "Senha gerada com sucesso.";
++      elementos.feedback.className = "feedback ok";
++      atualizarForca(senha);
++    }
++
++    async function copiarSenha() {
++      const senha = elementos.senha.textContent.trim();
++
++      if (!senha || senha.includes("Selecione pelo menos")) {
++        elementos.feedback.textContent = "Gere uma senha válida antes de copiar.";
++        elementos.feedback.className = "feedback warn";
++        return;
++      }
++
++      try {
++        await navigator.clipboard.writeText(senha);
++      } catch {
++        const areaTemporaria = document.createElement("textarea");
++        areaTemporaria.value = senha;
++        document.body.appendChild(areaTemporaria);
++        areaTemporaria.select();
++        document.execCommand("copy");
++        document.body.removeChild(areaTemporaria);
++      }
++
++      elementos.feedback.textContent = "Senha copiada para a área de transferência.";
++      elementos.feedback.className = "feedback ok";
++    }
++
++    elementos.tamanho.addEventListener("input", () => {
++      elementos.tamanhoValor.textContent = elementos.tamanho.value;
++      gerarSenha();
++    });
++
++    [elementos.maiusculas, elementos.minusculas, elementos.numeros, elementos.simbolos].forEach((item) => {
++      item.addEventListener("change", gerarSenha);
++    });
++
++    elementos.btnGerar.addEventListener("click", gerarSenha);
++    elementos.btnCopiar.addEventListener("click", copiarSenha);
++
++    gerarSenha();
++  </script>
++</body>
++</html>
+ 
+EOF
+)
