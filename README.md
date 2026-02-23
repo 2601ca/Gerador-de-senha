@@ -1,4 +1,4 @@
-#Gerador de Senhas Seguras
+# Gerador de Senhas Seguras
 
 Aplicação web desenvolvida para gerar senhas fortes e personalizadas de forma rápida e segura.
 
